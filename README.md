@@ -1,11 +1,12 @@
 Bellabeat: proyecto final
 ================
 
-## Gontenido
+## Contenido
 
-This is an R Markdown format used for publishing markdown documents to
-GitHub. When you click the **Knit** button all R code chunks are run and
-a markdown file (.md) suitable for publishing to GitHub is generated.
+Primero tuve que decidir a donde realizaria la subida de datos y github
+git remote add origin
+<https://github.com/AngelGurrola/bellabeat_proyect.git> git branch -M
+main git push -u origin main
 
 ## Including Code
 
