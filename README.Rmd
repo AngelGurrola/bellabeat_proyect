@@ -20,10 +20,15 @@ Urška Sršen y Sando Mur fundaron Bellabeat, una empresa de alta tecnología qu
   - Invirtió en medios tradicionales y en marketing digital
   - Invierte en google search y mantiene activas sus redes sociales
   - Anuncios de video en YT y avisos publicitarios en Red de Display Google en fechas clave.
+ 
+Orden de trabajo:
+
+Concentrarse en un producto Bellabeat y analizar losdatos de uso de dispositivos inteligentes para conocer cómo las personas están usando sus dispositivos inteligentes. Emitir recomendaciones de alto nivel sobre cómo estas tendencias pueden colaborar en la estrategia de marketing de Bellabeat.
+
 
 ## Paso cero
 
-A modo de repolicar mi trabajo en el futuro desde una perspectiva donde no recuerde absolutamente nada de lo que estoy haciendo ahora mismo, vi necesario incluir este paso donde primero tuve que decidir en que plataforma realizaria la publicación de mi trabajo y resolví que github es la plataforma más actualizada que ademas de alojar mi proyecto serviría para aprender a utilizar esta herramienta de control de versiones y que tambien me ayudaría a crear un portafolio inicial.
+A modo de replicar mi trabajo en el futuro desde una perspectiva donde no recuerde absolutamente nada de lo que estoy haciendo ahora mismo, vi necesario incluir este paso donde primero tuve que decidir en que plataforma realizaria la publicación de mi trabajo y resolví que github es la plataforma más actualizada que ademas de alojar mi proyecto serviría para aprender a utilizar esta herramienta de control de versiones y que tambien me ayudaría a crear un portafolio inicial.
 
 Tuve que aprender desde como crear un archivo README en R a conectar Git desde la misma interfaz de R studio y añadí mi proyecto a github utilizando las siguientes lineas de comandos:
 
@@ -35,13 +40,51 @@ Utilice el video tutorial de Riffomonas Project para aprender como conectar RStu
 
 Una vez teniendo la plataforma lista comence con mi proyecto de analisis de datos para Bellabeat.
 
-## Bellabeat 
+## Preparar
 
-You can include R code in the document as follows:
+Comenzamos con importar el conjunto de datos: descargamos la carpeta comprimida desde: https://www.kaggle.com/datasets/arashnic/fitbit
 
-```{r cars}
-summary(cars)
+Al descomprimir la carpeta de datos se observan 18 tablas con un peso de 322 MB en donde los titulos de cada una nos dan contexto del contenido y el peso de las mismas nos ayudan a dimensionar la cantidad de datos que poseen, siendo la tabla heartrate_seconds_merged la más pesada con 87.4  MB y weightLogInfo_merged la mas lígera con 7 KB. 
+
+Se añadieron todos los archivos al directorio de trabajo despues de darles un vistazo rápido desde hoja de cálculo.
+
+La tabla base desde obtendremos las primeras hipotesis será dailyActivity_merged, la cual provee un resumen diario de los totales de información recolectada por los dispositivos de Bellabeat.
+
+Entonces se procede a importar las tablas como conjunto de datos de R.
+```{r}
+library(readr)
+library(dplyr)
+pesos <- read.csv(file="C://Users//an_96//Documents//Bellabeat//Bellabeat//archive//Fitabase Data 4.12.16-5.12.16//weightLogInfo_merged.csv")
+pasos <- read.csv(file="C://Users//an_96//Documents//Bellabeat//Bellabeat//archive//Fitabase Data 4.12.16-5.12.16//hourlySteps_merged.csv")
+diario <- read.csv(file="C://Users//an_96//Documents//Bellabeat//Bellabeat//archive//Fitabase Data 4.12.16-5.12.16//dailyActivity_merged.csv")
 ```
+
+Durante la revisión rápida en hojas de cálculo se observaron notables diferencias en la cantidad de datos, por lo tanto, se procedió a confirmar la cantidad de Id que contenian algunas de las tablas.
+
+```{r}
+n_distinct(pesos$Id)
+n_distinct(pasos$Id)
+n_distinct(diario$Id)
+```
+Se observa como la tabla de pesos inlcuye unicamente los datos de 8 individuos por lo que deja de ser relevante para el analisis al no ser una variable que incluyan en todas las tablas.
+
+*Desde este punto considero importante mantener un registro más habitual del peso de los usuarios mediante una notificación de recordatorio a registrar tu peso.*
+
+Para explorar las tablas se utilizó la libreria de tidyverse
+
+```{r}
+glimpse(diario)
+```
+De esta exploracion se observa que la fecha podría convertirse en un formato ISO para facilitar el analisis así como el tipo de datos que se tienen en las distintas columnas.
+
+Para obtener una mayor descripción de los datos utilizo la siguiente función para obtener un resumen de los datos en la tabla de "diario".
+
+```{r}
+summary(diario)
+```
+
+
+
 
 ## Including Plots
 
