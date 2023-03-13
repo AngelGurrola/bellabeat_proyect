@@ -57,6 +57,8 @@ library(dplyr)
 pesos <- read.csv(file="C://Users//an_96//Documents//Bellabeat//Bellabeat//archive//Fitabase Data 4.12.16-5.12.16//weightLogInfo_merged.csv")
 pasos <- read.csv(file="C://Users//an_96//Documents//Bellabeat//Bellabeat//archive//Fitabase Data 4.12.16-5.12.16//hourlySteps_merged.csv")
 diario <- read.csv(file="C://Users//an_96//Documents//Bellabeat//Bellabeat//archive//Fitabase Data 4.12.16-5.12.16//dailyActivity_merged.csv")
+sueño <- read.csv(file="C://Users//an_96//Documents//Bellabeat//Bellabeat//archive//Fitabase Data 4.12.16-5.12.16//sleepDay_merged.csv")
+calorias <- read.csv(file="C://Users//an_96//Documents//Bellabeat//Bellabeat//archive//Fitabase Data 4.12.16-5.12.16//dailyCalories_merged.csv")
 ```
 
 Durante la revisión rápida en hojas de cálculo se observaron notables diferencias en la cantidad de datos, por lo tanto, se procedió a confirmar la cantidad de Id que contenian algunas de las tablas.
@@ -65,8 +67,12 @@ Durante la revisión rápida en hojas de cálculo se observaron notables diferen
 n_distinct(pesos$Id)
 n_distinct(pasos$Id)
 n_distinct(diario$Id)
+n_distinct(sueño$Id)
+n_distinct(calorias$Id)
 ```
 Se observa como la tabla de pesos inlcuye unicamente los datos de 8 individuos por lo que deja de ser relevante para el analisis al no ser una variable que incluyan en todas las tablas.
+
+Así como que la tabla de sueño contiene únicamente los registros de 24 usuarios.
 
 *Desde este punto considero importante mantener un registro más habitual del peso de los usuarios mediante una notificación de recordatorio a registrar tu peso.*
 
@@ -83,15 +89,57 @@ Para obtener una mayor descripción de los datos utilizo la siguiente función p
 summary(diario)
 ```
 
+Desde este punto se pueden determinar las respuestas a las preguntas clave de esta parte del reto: 
+
+Los datos tienen un formato largo y se organizan en 18 tablas almacenadas en archivos csv.
+Se detectan grandes problemas de sesgo al tener únicamente 33 usuarios de los cuales no se añaden contexto demográfico como su ubicación, edad, sexo (se infiere que son mujeres, pero no se confirma) etc.
+
+Si bien, la pregunta de los interesados está enfocada a la implementación de una nueva campaña de marketing para la utilización de los productos de bellabeat sobre los de la competencia, yo consideraría la posibilidad de ampliar la cantidad de datos para obtener mejores resultados y un nivel de confianza aceptable. 
+
+Para efectos del reto enfocaré los datos a esta pequeña población, tratándola como un punto de partida para la formulación de hipótesis que se podrán confirmar con un estudio posterior donde se observen cantidades de datos significativas.
+
+Se acotará el analisis a las variables de pasos y calorias al ambas contener datos de los 33 usuarios.
 
 
 
-## Including Plots
+## Procesar
 
-You can also embed plots, for example:
+Como se explicó anteriormente, se utilizará el lenguaje de programación R desde RStudio Desktop para este proyecto, así como el sitio de Github para su publicación y almacenamiento.
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+Se procede a buscar duplicados dentro del conjunto de datos.
+
+```{r}
+sum(duplicated(diario))
+sum(duplicated(pasos))
+sum(duplicated(calorias))
+
+sum(is.na(diario))
+sum(is.na(pasos))
+sum(is.na(calorias))
+```
+Al no encontrarse duplicados en las variables de analisis ni  valores na se procedió a buscar la cantidad de registros para cada usuario, es decir, la cantidad de dias que tenía cada usuario en su record diario.
+
+```{r}
+dias <- diario %>% group_by(Id) %>% 
+     summarise(conteo_dias=n(),
+               .groups = 'drop')
+hist(dias$conteo_dias)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+Mediante un histograma básico, se observó una cantidad distinta de registros para los usuarios.
+
+Se considera reducir el análisis a solo los individuos con más de 25 registros para evitar sesgos por registros incompletos que lleguen a alterar las cifras completas, sin emmbargo, se resuelve a clasificar a los usuarios como usuarios que no utilizan los productos habitualmente y se busca aplicar el enfoque a día de la semana para evitar ese sesgo.
+
+Para añadir esta variable se extrae de la columna de fecha el dia de la semana que se realizó el registro.
+
+```{r}
+diario <- diario %>% mutate( Dia_semana = weekdays(as.Date(ActivityDate, "%m/%d/%Y")))
+```
+
+Tras haber realizado esta manipulación de los datos, y tomar en cuenta las consideraciones previamente declaradas. Se procede al siguiente paso del proyecto.
+
+## Analizar
+
+
+
+
