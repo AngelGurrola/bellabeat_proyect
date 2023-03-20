@@ -8,23 +8,23 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## Contenido
-- Primero
-- Segundo
+
+-   Contexto
+-   Segundo
 
 ## Contexto
-En este proyecto simulamos trabajar para la empresa Bellabeat.
-Urška Sršen y Sando Mur fundaron Bellabeat, una empresa de alta tecnología que fabrica productos inteligentes focalizados en el cuidado de la salud.
+
+En este proyecto simulamos trabajar para la empresa Bellabeat. Urška Sršen y Sando Mur fundaron Bellabeat, una empresa de alta tecnología que fabrica productos inteligentes focalizados en el cuidado de la salud.
 
 ¿Qué ha hecho?
 
-  - Invirtió en medios tradicionales y en marketing digital
-  - Invierte en google search y mantiene activas sus redes sociales
-  - Anuncios de video en YT y avisos publicitarios en Red de Display Google en fechas clave.
- 
+-   Invirtió en medios tradicionales y en marketing digital
+-   Invierte en google search y mantiene activas sus redes sociales
+-   Anuncios de video en YT y avisos publicitarios en Red de Display Google en fechas clave.
+
 Orden de trabajo:
 
 Concentrarse en un producto Bellabeat y analizar losdatos de uso de dispositivos inteligentes para conocer cómo las personas están usando sus dispositivos inteligentes. Emitir recomendaciones de alto nivel sobre cómo estas tendencias pueden colaborar en la estrategia de marketing de Bellabeat.
-
 
 ## Paso cero
 
@@ -32,25 +32,26 @@ A modo de replicar mi trabajo en el futuro desde una perspectiva donde no recuer
 
 Tuve que aprender desde como crear un archivo README en R a conectar Git desde la misma interfaz de R studio y añadí mi proyecto a github utilizando las siguientes lineas de comandos:
 
-- git remote add origin https://github.com/AngelGurrola/bellabeat_proyect.git
-- git branch -M main
-- git push -u origin main
+-   git remote add origin <https://github.com/AngelGurrola/bellabeat_proyect.git>
+-   git branch -M main
+-   git push -u origin main
 
-Utilice el video tutorial de Riffomonas Project para aprender como conectar RStudio con github disponible en: https://www.youtube.com/watch?v=bUoN85QvC10&t=505s
+Utilice el video tutorial de Riffomonas Project para aprender como conectar RStudio con github disponible en: <https://www.youtube.com/watch?v=bUoN85QvC10&t=505s>
 
 Una vez teniendo la plataforma lista comence con mi proyecto de analisis de datos para Bellabeat.
 
 ## Preparar
 
-Comenzamos con importar el conjunto de datos: descargamos la carpeta comprimida desde: https://www.kaggle.com/datasets/arashnic/fitbit
+Comenzamos con importar el conjunto de datos: descargamos la carpeta comprimida desde: <https://www.kaggle.com/datasets/arashnic/fitbit>
 
-Al descomprimir la carpeta de datos se observan 18 tablas con un peso de 322 MB en donde los titulos de cada una nos dan contexto del contenido y el peso de las mismas nos ayudan a dimensionar la cantidad de datos que poseen, siendo la tabla heartrate_seconds_merged la más pesada con 87.4  MB y weightLogInfo_merged la mas lígera con 7 KB. 
+Al descomprimir la carpeta de datos se observan 18 tablas con un peso de 322 MB en donde los titulos de cada una nos dan contexto del contenido y el peso de las mismas nos ayudan a dimensionar la cantidad de datos que poseen, siendo la tabla heartrate_seconds_merged la más pesada con 87.4 MB y weightLogInfo_merged la mas lígera con 7 KB.
 
 Se añadieron todos los archivos al directorio de trabajo despues de darles un vistazo rápido desde hoja de cálculo.
 
 La tabla base desde obtendremos las primeras hipotesis será dailyActivity_merged, la cual provee un resumen diario de los totales de información recolectada por los dispositivos de Bellabeat.
 
 Entonces se procede a importar las tablas como conjunto de datos de R.
+
 ```{r}
 library(readr)
 library(dplyr)
@@ -72,6 +73,7 @@ n_distinct(diario$Id)
 n_distinct(sueño$Id)
 n_distinct(calorias$Id)
 ```
+
 Se observa como la tabla de pesos incluye unicamente los datos de 8 individuos por lo que deja de ser relevante para el analisis al no ser una variable que incluyan en todas las tablas.
 
 Así como que la tabla de sueño contiene únicamente los registros de 24 usuarios.
@@ -83,26 +85,40 @@ Para explorar las tablas se utilizó la libreria de tidyverse
 ```{r}
 glimpse(diario)
 ```
-De esta exploracion se observa que la fecha podría convertirse en un formato ISO para facilitar el analisis así como el tipo de datos que se tienen en las distintas columnas.
 
-Para obtener una mayor descripción de los datos utilizo la siguiente función para obtener un resumen de los datos en la tabla de "diario".
+De esta exploracion se observa que la fecha podría convertirse en un formato que permita manipulación para facilitar el analisis así como el tipo de datos que se tienen en las distintas columnas.
 
 ```{r}
-summary(diario)
+# diario
+diario$ActivityDate=as.POSIXct(diario$ActivityDate, format="%m/%d/%Y", tz=Sys.timezone())
+diario$fecha <- format(diario$ActivityDate, format = "%m/%d/%y")
 ```
 
-Desde este punto se pueden determinar las respuestas a las preguntas clave de esta parte del reto: 
+```{r}
+# En sueño manipulamos para quitar la hora
+sueño <- within(data=sueño, SleepDay <-data.frame
+                     (do.call('rbind',strsplit(SleepDay," ",fixed=TRUE))))
+sueño$SleepDay$X1=as.POSIXct(sueño$SleepDay$X1, format="%m/%d/%Y", tz=Sys.timezone())
+sueño$fecha <- format(sueño$SleepDay$X1, format = "%m/%d/%y")
+```
 
-Los datos tienen un formato largo y se organizan en 18 tablas almacenadas en archivos csv.
-Se detectan grandes problemas de sesgo al tener únicamente 33 usuarios de los cuales no se añaden contexto demográfico como su ubicación, edad, sexo (se infiere que son mujeres, pero no se confirma) etc.
+Para obtener una mayor descripción de los datos se utilizo la siguiente función para obtener un resumen de los datos en la tabla de "diario".
 
-Si bien, la pregunta de los interesados está enfocada a la implementación de una nueva campaña de marketing para la utilización de los productos de bellabeat sobre los de la competencia, yo consideraría la posibilidad de ampliar la cantidad de datos para obtener mejores resultados y un nivel de confianza aceptable. 
+```{r}
+diario %>%  
+  select(TotalSteps, TotalDistance, SedentaryMinutes, Calories) %>%
+  summary()
+```
+
+Desde este punto se pueden determinar las respuestas a las preguntas clave de esta parte del reto:
+
+Los datos tienen un formato largo y se organizan en 18 tablas almacenadas en archivos csv. Se detectan grandes problemas de sesgo al tener únicamente 33 usuarios de los cuales no se añaden contexto demográfico como su ubicación, edad, sexo (se infiere que son mujeres, pero no se confirma) etc.
+
+Si bien, la pregunta de los interesados está enfocada a la implementación de una nueva campaña de marketing para la utilización de los productos de bellabeat sobre los de la competencia, yo consideraría la posibilidad de ampliar la cantidad de datos para obtener mejores resultados y un nivel de confianza aceptable.
 
 Para efectos del reto enfocaré los datos a esta pequeña población, tratándola como un punto de partida para la formulación de hipótesis que se podrán confirmar con un estudio posterior donde se observen cantidades de datos significativas.
 
 Se acotará el analisis a las variables de pasos y calorias al ambas contener datos de los 33 usuarios.
-
-
 
 ## Procesar
 
@@ -119,7 +135,8 @@ sum(is.na(diario))
 sum(is.na(pasos))
 sum(is.na(calorias))
 ```
-Al no encontrarse duplicados en las variables de analisis ni  valores NA se procedió a buscar la cantidad de registros para cada usuario, es decir, la cantidad de dias que tenía cada usuario en su record diario.
+
+Al no encontrarse duplicados en las variables de analisis ni valores NA se procedió a buscar la cantidad de registros para cada usuario, es decir, la cantidad de dias que tenía cada usuario en su record diario.
 
 ```{r}
 dias <- diario %>% group_by(Id) %>% 
@@ -135,32 +152,46 @@ Se considera reducir el análisis a solo los individuos con más de 25 registros
 Para añadir esta variable se extrae de la columna de fecha el dia de la semana que se realizó el registro.
 
 ```{r}
-diario <- diario %>% mutate( Dia_semana = weekdays(as.Date(ActivityDate, "%m/%d/%Y")))
+diario <- diario %>% mutate( Dia_semana = weekdays(as.Date(fecha, "%m/%d/%Y", tz=Sys.timezone())))
 head(diario)
 ```
 
-La tabla diario contiene todas las variables de estudio y los datos de los usuarios reunidos en una única tabla, por lo que será seleccionada como principal.
+Antes de pasar a analizar el conjunto de datos, combinaremos la tabla de diario con la de sueño para obtener todos los datos diaros de los usuarios
 
+```{r}
+sueño <- sueño[,-c(2)]
+
+juntos <- merge(sueño, diario, by=c('Id', 'fecha'))
+head(juntos)
+```
+
+La tabla juntos contiene todas las variables de estudio y los datos de los usuarios reunidos en una única tabla, por lo que será seleccionada como principal.
 
 Tras haber realizado esta manipulación de los datos, y tomar en cuenta las consideraciones previamente declaradas. Se procede al siguiente paso del proyecto.
 
 ## Analizar
 
 Primeramente recordaremos los encabezados de nuestra tabla
+
 ```{r}
-colnames(diario)
+colnames(juntos)
 ```
 
 ```{r}
-summary(diario)
+juntos %>%
+  select(TotalMinutesAsleep, TotalTimeInBed, TotalSteps, TotalDistance, SedentaryMinutes, Calories) %>%
+  summary()
 ```
 
 ### Por dia de la semana
 
 Para comparar los datos desde la perspectiva de día de la semana se exportó el archivo csv que por cuestiones de tiempo facilitó el análisis y la creación de gráficos.
 
+Usando la función:
 
 write.csv(diario, file = "diario.csv")
+
+De igual manera se intentaron realizar las gráficas desde R:
 
 ```{r}
 ##diario$Dia_semana = factor(diario$Dia_semana, levels = c("lunes", "martes", "miércoles", "jueves", "sábado", "domingo"))
@@ -168,20 +199,21 @@ write.csv(diario, file = "diario.csv")
 
 ```{r}
 df %>%
-ggplot(data = diario, mapping = aes(x = Dia_semana, y = TotalSteps, fill = Dia_semana))+ geom_bar(stat = "identity", position = "dodge") + labs(title = "Pasos por dia de la semana") 
+ggplot(data = juntos, mapping = aes(x = Dia_semana, y = TotalSteps, fill = Dia_semana))+ geom_bar(stat = "identity", position = "dodge") + labs(title = "Pasos por dia de la semana") 
 ```
 
 ```{r}
 library(forcats)
 df %>%
-ggplot(data = diario, mapping = aes(x = fct_rev(fct_reorder(Dia_semana, Calories)), y = TotalSteps, fill = Dia_semana))+ geom_bar(stat = "identity") + labs(title = "Pasos por dia de la semana") 
+ggplot(data = juntos, mapping = aes(x = fct_rev(fct_reorder(Dia_semana, Calories)), y = TotalSteps, fill = Dia_semana))+ geom_bar(stat = "identity") + labs(title = "Pasos por dia de la semana") 
 ```
-Para corroborar el uso de los dispositivos de Bellabeat por día de la semana se graficaron los registros
-![Calorias por dia de la semana.](~/Bellabeat/Bellabeat/archive/1.png)
-![Calorias por dia de la semana.](~/Bellabeat/Bellabeat/archive/2.png)
 
+Para corroborar el uso de los dispositivos de Bellabeat por día de la semana se graficaron los registros en excel como se muestra en las siguientes imagenes:
+
+![Calorias por dia de la semana.](~/1.png) ![Calorias por dia de la semana.](~/2.png)
 
 ### Hipotesis de pesos
+
 Aún cuando se descartó la importancia de la tabla de pesos resumiremos los datos para conocer las características de los usuarios que sí registraton datos.
 
 ```{r}
@@ -192,15 +224,94 @@ usuariospesos <- pesos %>%
 arrange(usuariospesos, IMCpromedio)
 ```
 
-De esta tabla esperaba obtener la cantidad de reportes efectuados manualmente considerando el IMC de la persona. Buscando una relación entre las variables, sin embargo, por la cantidad de datos se debe resolver primero que se obtengan los datos de más participantes. Considero que uno de los mejores indicadores de la salud de una persona es el Indice de Masa Corporal(BMI en inglés) y por tanto se me ocurre ofrecer paquetes de productos donde se utilicen productos que monitoreen el IMC para que la aplicación de Bellabeat ofrezca notificaciones cuando este se vea fuera de sus parámetros normales, pasando a un monitoreo activo de tu IMC.
+De esta tabla esperaba obtener la cantidad de reportes efectuados manualmente considerando el IMC de la persona. Buscando una relación entre las variables, sin embargo, por la cantidad de datos se debe resolver primero que se obtengan los datos de más participantes. Considero que uno de los mejores indicadores de la salud de una persona es el Indice de Masa Corporal (BMI en inglés) y por tanto se me ocurre ofrecer paquetes de productos donde se utilicen productos que monitoreen el IMC para que la aplicación de Bellabeat ofrezca notificaciones cuando este se vea fuera de sus parámetros normales, pasando a un monitoreo activo de tu IMC.
 
+### Relaciones entre variables
+
+#### Diario
+
+En este apartado se revisaron las diferentes correlaciones que pueden existir dentro de la tabla de diario.
+
+Se comenzó por una hipotesis obvia donde a mayor cantidad de pasos, mayor cantidad de calorías visualizando como se muestra a continuación:
 
 ```{r}
-
+ggplot(data=diario, aes(x=TotalSteps, y=Calories)) + 
+  geom_point() + geom_smooth() + labs(title="Calorias vs. Pasos totales")
 ```
 
+*Se pueden crear indicadores para los usuarios donde se indique la cantidad de calorias que han quemado con base a sus pasos y si quieren fijar una meta de calorías convertirla a una meta de pasos o distancia por recorrer.*
 
+```{r}
+ggplot(data=diario, aes(x=SedentaryMinutes, y=VeryActiveMinutes)) + 
+  geom_point() + geom_smooth() + labs(title="Min sedentarios vs. Min Activos")
+```
 
+Se esperaba observar una relación negativa entre estas variables que, aunque existe una tendencia negativa, no se confirma con certeza, esto podría deberse a la poca cantidad de datos , sin embargo, es interesante ver puntos con altos niveles de ambas variables, tal vez, refiriendose a personas que durante su jornada laboral entran en la clasificación de sedentario pero que, al salir, se vuelven muy activos.
 
+*A lo largo del dia, en medida que se aumenten los minutos de la categoría sedentarios la aplicación puede notificar al usuario que de un pequeño estiron, ejercicios de estiramiento o simplemente dar un respiro.*
 
+#### Sueño
 
+La tabla de sueño también se analizó por separado para la relación entre las únicas dos variables contenidas en la tabla:
+
+```{r}
+ggplot(data=sueño, aes(x=TotalMinutesAsleep, y=TotalTimeInBed)) + 
+  geom_point() + geom_smooth() + labs(title="Min dormido vs. Tiempo en Cama")
+```
+
+Se observa lo obvio, sin embargo, esto nos sirve para **confirmar la confiabilidad de los datos.**
+
+#### Juntos
+
+Se continuó a analizar la tabla combinada de juntos:
+
+Primeramente visualizando la Cantidad de Casos contra el Tiempo en Cama
+
+```{r}
+ggplot(data=juntos, aes(x=TotalSteps, y=TotalTimeInBed)) + 
+  geom_point() + geom_smooth() + labs(title="Pasos vs. Tiempo en cama")
+```
+
+```{r}
+ggplot(data=juntos, aes(x=SedentaryMinutes, y=TotalMinutesAsleep)) + 
+  geom_point() + geom_smooth() + labs(title="Min Dormido vs. Min Sedentarios")
+```
+
+De esta gráfica se obtiene una correlación negativa entre la cantidad de tiempo que una persona duerme contra la cantidad de minutos sedentarios que el usuario tiene durante el día.
+
+```{r}
+ggplot(data=juntos, aes(x=SedentaryMinutes, y=TotalTimeInBed)) + 
+  geom_point() + geom_smooth() + labs(title="Tiempo en Cama vs. Min Sedentarios")
+```
+
+Se confirman la relación utilizando la otra variable de la tabla de sueño, Tiempo en cama, donde se obtiene básicamente la misma gráfica.
+
+Una diferencia importante es la como la información en el eje y, que reflejan las variables de sueño presentan valores distintos, indicando que, mayor tiempo en cama no es necesariamente tiempo dormido.
+
+*La aplicación puede recomendar realizar ejercicios de meditación para conciliar el sueño más rapidamente cuando llegue la hora de acostarse y así pasar más tiempo efectivo de sueño y no solo acostado.*
+
+## Resultados
+
+●	¿Cómo deberías organizar tus datos para realizar un análisis?
+
+Los datos se organizaron de manera que pudieron ser manipulables y combinados. Se observaron las gráficas de dispersión para corroborar la confiabilidad en los datos.
+
+●	¿Tus datos tienen el formato correcto?
+
+La tabla de juntos parece presentar problemas de combinación, por lo tanto hay que re intentar
+
+●	¿Qué sorpresas descubriste en los datos?
+
+Los formatos de fecha y hora pueden ser un dolor de cabeza.
+
+●	¿Qué tendencias o relaciones encontraste en los datos?
+
+Hipotesis obvias de como funciona el cuerpo,
+
+●	¿Cómo te ayudarán estos conocimientos para responder a tus preguntas empresariales?
+
+Confirmando lo obvio, pero respaldado por los datos, no solo por mi conocimiento empirico.
+
+## Compartir
+
+Se realizaron observaciones a lo largo del documento con el formato de *italicas*

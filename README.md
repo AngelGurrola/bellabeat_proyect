@@ -3,7 +3,7 @@ Bellabeat: proyecto final
 
 ## Contenido
 
-- Primero
+- Contexto
 - Segundo
 
 ## Contexto
@@ -193,51 +193,39 @@ glimpse(diario)
     ## $ Calories                 <int> 1985, 1797, 1776, 1745, 1863, 1728, 1921, 203…
 
 De esta exploracion se observa que la fecha podría convertirse en un
-formato ISO para facilitar el analisis así como el tipo de datos que se
-tienen en las distintas columnas.
+formato que permita manipulación para facilitar el analisis así como el
+tipo de datos que se tienen en las distintas columnas.
 
-Para obtener una mayor descripción de los datos utilizo la siguiente
+``` r
+# diario
+diario$ActivityDate=as.POSIXct(diario$ActivityDate, format="%m/%d/%Y", tz=Sys.timezone())
+diario$fecha <- format(diario$ActivityDate, format = "%m/%d/%y")
+```
+
+``` r
+# En sueño manipulamos para quitar la hora
+sueño <- within(data=sueño, SleepDay <-data.frame
+                     (do.call('rbind',strsplit(SleepDay," ",fixed=TRUE))))
+sueño$SleepDay$X1=as.POSIXct(sueño$SleepDay$X1, format="%m/%d/%Y", tz=Sys.timezone())
+sueño$fecha <- format(sueño$SleepDay$X1, format = "%m/%d/%y")
+```
+
+Para obtener una mayor descripción de los datos se utilizo la siguiente
 función para obtener un resumen de los datos en la tabla de “diario”.
 
 ``` r
-summary(diario)
+diario %>%  
+  select(TotalSteps, TotalDistance, SedentaryMinutes, Calories) %>%
+  summary()
 ```
 
-    ##        Id            ActivityDate         TotalSteps    TotalDistance   
-    ##  Min.   :1.504e+09   Length:940         Min.   :    0   Min.   : 0.000  
-    ##  1st Qu.:2.320e+09   Class :character   1st Qu.: 3790   1st Qu.: 2.620  
-    ##  Median :4.445e+09   Mode  :character   Median : 7406   Median : 5.245  
-    ##  Mean   :4.855e+09                      Mean   : 7638   Mean   : 5.490  
-    ##  3rd Qu.:6.962e+09                      3rd Qu.:10727   3rd Qu.: 7.713  
-    ##  Max.   :8.878e+09                      Max.   :36019   Max.   :28.030  
-    ##  TrackerDistance  LoggedActivitiesDistance VeryActiveDistance
-    ##  Min.   : 0.000   Min.   :0.0000           Min.   : 0.000    
-    ##  1st Qu.: 2.620   1st Qu.:0.0000           1st Qu.: 0.000    
-    ##  Median : 5.245   Median :0.0000           Median : 0.210    
-    ##  Mean   : 5.475   Mean   :0.1082           Mean   : 1.503    
-    ##  3rd Qu.: 7.710   3rd Qu.:0.0000           3rd Qu.: 2.053    
-    ##  Max.   :28.030   Max.   :4.9421           Max.   :21.920    
-    ##  ModeratelyActiveDistance LightActiveDistance SedentaryActiveDistance
-    ##  Min.   :0.0000           Min.   : 0.000      Min.   :0.000000       
-    ##  1st Qu.:0.0000           1st Qu.: 1.945      1st Qu.:0.000000       
-    ##  Median :0.2400           Median : 3.365      Median :0.000000       
-    ##  Mean   :0.5675           Mean   : 3.341      Mean   :0.001606       
-    ##  3rd Qu.:0.8000           3rd Qu.: 4.782      3rd Qu.:0.000000       
-    ##  Max.   :6.4800           Max.   :10.710      Max.   :0.110000       
-    ##  VeryActiveMinutes FairlyActiveMinutes LightlyActiveMinutes SedentaryMinutes
-    ##  Min.   :  0.00    Min.   :  0.00      Min.   :  0.0        Min.   :   0.0  
-    ##  1st Qu.:  0.00    1st Qu.:  0.00      1st Qu.:127.0        1st Qu.: 729.8  
-    ##  Median :  4.00    Median :  6.00      Median :199.0        Median :1057.5  
-    ##  Mean   : 21.16    Mean   : 13.56      Mean   :192.8        Mean   : 991.2  
-    ##  3rd Qu.: 32.00    3rd Qu.: 19.00      3rd Qu.:264.0        3rd Qu.:1229.5  
-    ##  Max.   :210.00    Max.   :143.00      Max.   :518.0        Max.   :1440.0  
-    ##     Calories   
-    ##  Min.   :   0  
-    ##  1st Qu.:1828  
-    ##  Median :2134  
-    ##  Mean   :2304  
-    ##  3rd Qu.:2793  
-    ##  Max.   :4900
+    ##    TotalSteps    TotalDistance    SedentaryMinutes    Calories   
+    ##  Min.   :    0   Min.   : 0.000   Min.   :   0.0   Min.   :   0  
+    ##  1st Qu.: 3790   1st Qu.: 2.620   1st Qu.: 729.8   1st Qu.:1828  
+    ##  Median : 7406   Median : 5.245   Median :1057.5   Median :2134  
+    ##  Mean   : 7638   Mean   : 5.490   Mean   : 991.2   Mean   :2304  
+    ##  3rd Qu.:10727   3rd Qu.: 7.713   3rd Qu.:1229.5   3rd Qu.:2793  
+    ##  Max.   :36019   Max.   :28.030   Max.   :1440.0   Max.   :4900
 
 Desde este punto se pueden determinar las respuestas a las preguntas
 clave de esta parte del reto:
@@ -317,7 +305,7 @@ dias <- diario %>% group_by(Id) %>%
 hist(dias$conteo_dias)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
 Mediante un histograma básico, se observó una cantidad distinta de
 registros para los usuarios.
@@ -333,17 +321,17 @@ Para añadir esta variable se extrae de la columna de fecha el dia de la
 semana que se realizó el registro.
 
 ``` r
-diario <- diario %>% mutate( Dia_semana = weekdays(as.Date(ActivityDate, "%m/%d/%Y")))
+diario <- diario %>% mutate( Dia_semana = weekdays(as.Date(fecha, "%m/%d/%Y", tz=Sys.timezone())))
 head(diario)
 ```
 
     ##           Id ActivityDate TotalSteps TotalDistance TrackerDistance
-    ## 1 1503960366    4/12/2016      13162          8.50            8.50
-    ## 2 1503960366    4/13/2016      10735          6.97            6.97
-    ## 3 1503960366    4/14/2016      10460          6.74            6.74
-    ## 4 1503960366    4/15/2016       9762          6.28            6.28
-    ## 5 1503960366    4/16/2016      12669          8.16            8.16
-    ## 6 1503960366    4/17/2016       9705          6.48            6.48
+    ## 1 1503960366   2016-04-12      13162          8.50            8.50
+    ## 2 1503960366   2016-04-13      10735          6.97            6.97
+    ## 3 1503960366   2016-04-14      10460          6.74            6.74
+    ## 4 1503960366   2016-04-15       9762          6.28            6.28
+    ## 5 1503960366   2016-04-16      12669          8.16            8.16
+    ## 6 1503960366   2016-04-17       9705          6.48            6.48
     ##   LoggedActivitiesDistance VeryActiveDistance ModeratelyActiveDistance
     ## 1                        0               1.88                     0.55
     ## 2                        0               1.57                     0.69
@@ -358,15 +346,69 @@ head(diario)
     ## 4                2.83                       0                29
     ## 5                5.04                       0                36
     ## 6                2.51                       0                38
+    ##   FairlyActiveMinutes LightlyActiveMinutes SedentaryMinutes Calories    fecha
+    ## 1                  13                  328              728     1985 04/12/16
+    ## 2                  19                  217              776     1797 04/13/16
+    ## 3                  11                  181             1218     1776 04/14/16
+    ## 4                  34                  209              726     1745 04/15/16
+    ## 5                  10                  221              773     1863 04/16/16
+    ## 6                  20                  164              539     1728 04/17/16
+    ##   Dia_semana
+    ## 1     martes
+    ## 2  miércoles
+    ## 3     jueves
+    ## 4    viernes
+    ## 5     sábado
+    ## 6    domingo
+
+Antes de pasar a analizar el conjunto de datos, combinaremos la tabla de
+diario con la de sueño para obtener todos los datos diaros de los
+usuarios
+
+``` r
+sueño <- sueño[,-c(2)]
+
+juntos <- merge(sueño, diario, by=c('Id', 'fecha'))
+head(juntos)
+```
+
+    ##           Id    fecha TotalSleepRecords TotalMinutesAsleep TotalTimeInBed
+    ## 1 1503960366 04/12/16                 1                327            346
+    ## 2 1503960366 04/13/16                 2                384            407
+    ## 3 1503960366 04/15/16                 1                412            442
+    ## 4 1503960366 04/16/16                 2                340            367
+    ## 5 1503960366 04/17/16                 1                700            712
+    ## 6 1503960366 04/19/16                 1                304            320
+    ##   ActivityDate TotalSteps TotalDistance TrackerDistance
+    ## 1   2016-04-12      13162          8.50            8.50
+    ## 2   2016-04-13      10735          6.97            6.97
+    ## 3   2016-04-15       9762          6.28            6.28
+    ## 4   2016-04-16      12669          8.16            8.16
+    ## 5   2016-04-17       9705          6.48            6.48
+    ## 6   2016-04-19      15506          9.88            9.88
+    ##   LoggedActivitiesDistance VeryActiveDistance ModeratelyActiveDistance
+    ## 1                        0               1.88                     0.55
+    ## 2                        0               1.57                     0.69
+    ## 3                        0               2.14                     1.26
+    ## 4                        0               2.71                     0.41
+    ## 5                        0               3.19                     0.78
+    ## 6                        0               3.53                     1.32
+    ##   LightActiveDistance SedentaryActiveDistance VeryActiveMinutes
+    ## 1                6.06                       0                25
+    ## 2                4.71                       0                21
+    ## 3                2.83                       0                29
+    ## 4                5.04                       0                36
+    ## 5                2.51                       0                38
+    ## 6                5.03                       0                50
     ##   FairlyActiveMinutes LightlyActiveMinutes SedentaryMinutes Calories Dia_semana
     ## 1                  13                  328              728     1985     martes
     ## 2                  19                  217              776     1797  miércoles
-    ## 3                  11                  181             1218     1776     jueves
-    ## 4                  34                  209              726     1745    viernes
-    ## 5                  10                  221              773     1863     sábado
-    ## 6                  20                  164              539     1728    domingo
+    ## 3                  34                  209              726     1745    viernes
+    ## 4                  10                  221              773     1863     sábado
+    ## 5                  20                  164              539     1728    domingo
+    ## 6                  31                  264              775     2035     martes
 
-La tabla diario contiene todas las variables de estudio y los datos de
+La tabla juntos contiene todas las variables de estudio y los datos de
 los usuarios reunidos en una única tabla, por lo que será seleccionada
 como principal.
 
@@ -379,57 +421,40 @@ del proyecto.
 Primeramente recordaremos los encabezados de nuestra tabla
 
 ``` r
-colnames(diario)
+colnames(juntos)
 ```
 
-    ##  [1] "Id"                       "ActivityDate"            
-    ##  [3] "TotalSteps"               "TotalDistance"           
-    ##  [5] "TrackerDistance"          "LoggedActivitiesDistance"
-    ##  [7] "VeryActiveDistance"       "ModeratelyActiveDistance"
-    ##  [9] "LightActiveDistance"      "SedentaryActiveDistance" 
-    ## [11] "VeryActiveMinutes"        "FairlyActiveMinutes"     
-    ## [13] "LightlyActiveMinutes"     "SedentaryMinutes"        
-    ## [15] "Calories"                 "Dia_semana"
+    ##  [1] "Id"                       "fecha"                   
+    ##  [3] "TotalSleepRecords"        "TotalMinutesAsleep"      
+    ##  [5] "TotalTimeInBed"           "ActivityDate"            
+    ##  [7] "TotalSteps"               "TotalDistance"           
+    ##  [9] "TrackerDistance"          "LoggedActivitiesDistance"
+    ## [11] "VeryActiveDistance"       "ModeratelyActiveDistance"
+    ## [13] "LightActiveDistance"      "SedentaryActiveDistance" 
+    ## [15] "VeryActiveMinutes"        "FairlyActiveMinutes"     
+    ## [17] "LightlyActiveMinutes"     "SedentaryMinutes"        
+    ## [19] "Calories"                 "Dia_semana"
 
 ``` r
-summary(diario)
+juntos %>%
+  select(TotalMinutesAsleep, TotalTimeInBed, TotalSteps, TotalDistance, SedentaryMinutes, Calories) %>%
+  summary()
 ```
 
-    ##        Id            ActivityDate         TotalSteps    TotalDistance   
-    ##  Min.   :1.504e+09   Length:940         Min.   :    0   Min.   : 0.000  
-    ##  1st Qu.:2.320e+09   Class :character   1st Qu.: 3790   1st Qu.: 2.620  
-    ##  Median :4.445e+09   Mode  :character   Median : 7406   Median : 5.245  
-    ##  Mean   :4.855e+09                      Mean   : 7638   Mean   : 5.490  
-    ##  3rd Qu.:6.962e+09                      3rd Qu.:10727   3rd Qu.: 7.713  
-    ##  Max.   :8.878e+09                      Max.   :36019   Max.   :28.030  
-    ##  TrackerDistance  LoggedActivitiesDistance VeryActiveDistance
-    ##  Min.   : 0.000   Min.   :0.0000           Min.   : 0.000    
-    ##  1st Qu.: 2.620   1st Qu.:0.0000           1st Qu.: 0.000    
-    ##  Median : 5.245   Median :0.0000           Median : 0.210    
-    ##  Mean   : 5.475   Mean   :0.1082           Mean   : 1.503    
-    ##  3rd Qu.: 7.710   3rd Qu.:0.0000           3rd Qu.: 2.053    
-    ##  Max.   :28.030   Max.   :4.9421           Max.   :21.920    
-    ##  ModeratelyActiveDistance LightActiveDistance SedentaryActiveDistance
-    ##  Min.   :0.0000           Min.   : 0.000      Min.   :0.000000       
-    ##  1st Qu.:0.0000           1st Qu.: 1.945      1st Qu.:0.000000       
-    ##  Median :0.2400           Median : 3.365      Median :0.000000       
-    ##  Mean   :0.5675           Mean   : 3.341      Mean   :0.001606       
-    ##  3rd Qu.:0.8000           3rd Qu.: 4.782      3rd Qu.:0.000000       
-    ##  Max.   :6.4800           Max.   :10.710      Max.   :0.110000       
-    ##  VeryActiveMinutes FairlyActiveMinutes LightlyActiveMinutes SedentaryMinutes
-    ##  Min.   :  0.00    Min.   :  0.00      Min.   :  0.0        Min.   :   0.0  
-    ##  1st Qu.:  0.00    1st Qu.:  0.00      1st Qu.:127.0        1st Qu.: 729.8  
-    ##  Median :  4.00    Median :  6.00      Median :199.0        Median :1057.5  
-    ##  Mean   : 21.16    Mean   : 13.56      Mean   :192.8        Mean   : 991.2  
-    ##  3rd Qu.: 32.00    3rd Qu.: 19.00      3rd Qu.:264.0        3rd Qu.:1229.5  
-    ##  Max.   :210.00    Max.   :143.00      Max.   :518.0        Max.   :1440.0  
-    ##     Calories     Dia_semana       
-    ##  Min.   :   0   Length:940        
-    ##  1st Qu.:1828   Class :character  
-    ##  Median :2134   Mode  :character  
-    ##  Mean   :2304                     
-    ##  3rd Qu.:2793                     
-    ##  Max.   :4900
+    ##  TotalMinutesAsleep TotalTimeInBed    TotalSteps    TotalDistance   
+    ##  Min.   : 58.0      Min.   : 61.0   Min.   :   17   Min.   : 0.010  
+    ##  1st Qu.:361.0      1st Qu.:403.0   1st Qu.: 5206   1st Qu.: 3.600  
+    ##  Median :433.0      Median :463.0   Median : 8925   Median : 6.290  
+    ##  Mean   :419.5      Mean   :458.6   Mean   : 8541   Mean   : 6.039  
+    ##  3rd Qu.:490.0      3rd Qu.:526.0   3rd Qu.:11393   3rd Qu.: 8.030  
+    ##  Max.   :796.0      Max.   :961.0   Max.   :22770   Max.   :17.540  
+    ##  SedentaryMinutes    Calories   
+    ##  Min.   :   0.0   Min.   : 257  
+    ##  1st Qu.: 631.0   1st Qu.:1850  
+    ##  Median : 717.0   Median :2220  
+    ##  Mean   : 712.2   Mean   :2398  
+    ##  3rd Qu.: 783.0   3rd Qu.:2926  
+    ##  Max.   :1265.0   Max.   :4900
 
 ### Por dia de la semana
 
@@ -437,7 +462,11 @@ Para comparar los datos desde la perspectiva de día de la semana se
 exportó el archivo csv que por cuestiones de tiempo facilitó el análisis
 y la creación de gráficos.
 
+Usando la función:
+
 write.csv(diario, file = “diario.csv”)
+
+De igual manera se intentaron realizar las gráficas desde R:
 
 ``` r
 ##diario$Dia_semana = factor(diario$Dia_semana, levels = c("lunes", "martes", "miércoles", "jueves", "sábado", "domingo"))
@@ -445,22 +474,25 @@ write.csv(diario, file = “diario.csv”)
 
 ``` r
 df %>%
-ggplot(data = diario, mapping = aes(x = Dia_semana, y = TotalSteps, fill = Dia_semana))+ geom_bar(stat = "identity", position = "dodge") + labs(title = "Pasos por dia de la semana") 
+ggplot(data = juntos, mapping = aes(x = Dia_semana, y = TotalSteps, fill = Dia_semana))+ geom_bar(stat = "identity", position = "dodge") + labs(title = "Pasos por dia de la semana") 
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
 
 ``` r
 library(forcats)
 df %>%
-ggplot(data = diario, mapping = aes(x = fct_rev(fct_reorder(Dia_semana, Calories)), y = TotalSteps, fill = Dia_semana))+ geom_bar(stat = "identity") + labs(title = "Pasos por dia de la semana") 
+ggplot(data = juntos, mapping = aes(x = fct_rev(fct_reorder(Dia_semana, Calories)), y = TotalSteps, fill = Dia_semana))+ geom_bar(stat = "identity") + labs(title = "Pasos por dia de la semana") 
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-12-1.png)<!-- --> Para
-corroborar el uso de los dispositivos de Bellabeat por día de la semana
-se graficaron los registros ![Calorias por dia de la
-semana.](~/Bellabeat/Bellabeat/archive/1.png) ![Calorias por dia de la
-semana.](~/Bellabeat/Bellabeat/archive/2.png)
+![](README_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+
+Para corroborar el uso de los dispositivos de Bellabeat por día de la
+semana se graficaron los registros en excel como se muestra en las
+siguientes imagenes:
+
+![Calorias por dia de la semana.](~/1.png) ![Calorias por dia de la
+semana.](~/2.png)
 
 ### Hipotesis de pesos
 
@@ -500,8 +532,150 @@ manualmente considerando el IMC de la persona. Buscando una relación
 entre las variables, sin embargo, por la cantidad de datos se debe
 resolver primero que se obtengan los datos de más participantes.
 Considero que uno de los mejores indicadores de la salud de una persona
-es el Indice de Masa Corporal(BMI en inglés) y por tanto se me ocurre
+es el Indice de Masa Corporal (BMI en inglés) y por tanto se me ocurre
 ofrecer paquetes de productos donde se utilicen productos que monitoreen
 el IMC para que la aplicación de Bellabeat ofrezca notificaciones cuando
 este se vea fuera de sus parámetros normales, pasando a un monitoreo
 activo de tu IMC.
+
+### Relaciones entre variables
+
+#### Diario
+
+En este apartado se revisaron las diferentes correlaciones que pueden
+existir dentro de la tabla de diario.
+
+Se comenzó por una hipotesis obvia donde a mayor cantidad de pasos,
+mayor cantidad de calorías visualizando como se muestra a continuación:
+
+``` r
+ggplot(data=diario, aes(x=TotalSteps, y=Calories)) + 
+  geom_point() + geom_smooth() + labs(title="Calorias vs. Pasos totales")
+```
+
+    ## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
+
+![](README_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
+
+*Se pueden crear indicadores para los usuarios donde se indique la
+cantidad de calorias que han quemado con base a sus pasos y si quieren
+fijar una meta de calorías convertirla a una meta de pasos o distancia
+por recorrer.*
+
+``` r
+ggplot(data=diario, aes(x=SedentaryMinutes, y=VeryActiveMinutes)) + 
+  geom_point() + geom_smooth() + labs(title="Min sedentarios vs. Min Activos")
+```
+
+    ## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
+
+![](README_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+
+Se esperaba observar una relación negativa entre estas variables que,
+aunque existe una tendencia negativa, no se confirma con certeza, esto
+podría deberse a la poca cantidad de datos , sin embargo, es interesante
+ver puntos con altos niveles de ambas variables, tal vez, refiriendose a
+personas que durante su jornada laboral entran en la clasificación de
+sedentario pero que, al salir, se vuelven muy activos.
+
+*A lo largo del dia, en medida que se aumenten los minutos de la
+categoría sedentarios la aplicación puede notificar al usuario que de un
+pequeño estiron, ejercicios de estiramiento o simplemente dar un
+respiro.*
+
+#### Sueño
+
+La tabla de sueño también se analizó por separado para la relación entre
+las únicas dos variables contenidas en la tabla:
+
+``` r
+ggplot(data=sueño, aes(x=TotalMinutesAsleep, y=TotalTimeInBed)) + 
+  geom_point() + geom_smooth() + labs(title="Min dormido vs. Tiempo en Cama")
+```
+
+    ## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
+
+![](README_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
+
+Se observa lo obvio, sin embargo, esto nos sirve para **confirmar la
+confiabilidad de los datos.**
+
+#### Juntos
+
+Se continuó a analizar la tabla combinada de juntos:
+
+Primeramente visualizando la Cantidad de Casos contra el Tiempo en Cama
+
+``` r
+ggplot(data=juntos, aes(x=TotalSteps, y=TotalTimeInBed)) + 
+  geom_point() + geom_smooth() + labs(title="Pasos vs. Tiempo en cama")
+```
+
+    ## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
+
+![](README_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
+
+``` r
+ggplot(data=juntos, aes(x=SedentaryMinutes, y=TotalMinutesAsleep)) + 
+  geom_point() + geom_smooth() + labs(title="Min Dormido vs. Min Sedentarios")
+```
+
+    ## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
+
+![](README_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
+
+De esta gráfica se obtiene una correlación negativa entre la cantidad de
+tiempo que una persona duerme contra la cantidad de minutos sedentarios
+que el usuario tiene durante el día.
+
+``` r
+ggplot(data=juntos, aes(x=SedentaryMinutes, y=TotalTimeInBed)) + 
+  geom_point() + geom_smooth() + labs(title="Tiempo en Cama vs. Min Sedentarios")
+```
+
+    ## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
+
+![](README_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
+
+Se confirman la relación utilizando la otra variable de la tabla de
+sueño, Tiempo en cama, donde se obtiene básicamente la misma gráfica.
+
+Una diferencia importante es la como la información en el eje y, que
+reflejan las variables de sueño presentan valores distintos, indicando
+que, mayor tiempo en cama no es necesariamente tiempo dormido.
+
+*La aplicación puede recomendar realizar ejercicios de meditación para
+conciliar el sueño más rapidamente cuando llegue la hora de acostarse y
+así pasar más tiempo efectivo de sueño y no solo acostado.*
+
+## Resultados
+
+● ¿Cómo deberías organizar tus datos para realizar un análisis?
+
+Los datos se organizaron de manera que pudieron ser manipulables y
+combinados. Se observaron las gráficas de dispersión para corroborar la
+confiabilidad en los datos.
+
+● ¿Tus datos tienen el formato correcto?
+
+La tabla de juntos parece presentar problemas de combinación, por lo
+tanto hay que re intentar
+
+● ¿Qué sorpresas descubriste en los datos?
+
+Los formatos de fecha y hora pueden ser un dolor de cabeza.
+
+● ¿Qué tendencias o relaciones encontraste en los datos?
+
+Hipotesis obvias de como funciona el cuerpo,
+
+● ¿Cómo te ayudarán estos conocimientos para responder a tus preguntas
+empresariales?
+
+Confirmando lo obvio, pero respaldado por los datos, no solo por mi
+conocimiento empirico.
+
+## Compartir
+
+Se realizaron observaciones a lo largo del documento con el formato de
+*italicas*
