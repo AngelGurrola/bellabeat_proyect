@@ -8,9 +8,9 @@ Bellabeat: proyecto final
 - [Preparar](#preparar)
 - [Procesar](#procesar)
 - [Analizar y Compartir](#analizar-y-compartir)
-  - [Por dia de la semana](#por-dia-de-la-semana)
+  - [Por día de la semana](#por-día-de-la-semana)
 
-  - [Hipotesis de pesos](#hipotesis-de-pesos)
+  - [Hipótesis de pesos](#hipótesis-de-pesos)
 
   - [Relaciones entre variables](#relaciones-entre-variables)
 
@@ -50,25 +50,25 @@ marketing de Bellabeat.
 A modo de replicar mi trabajo en el futuro desde una perspectiva donde
 no recuerde absolutamente nada de lo que estoy haciendo ahora mismo, vi
 necesario incluir este paso donde primero tuve que decidir en que
-plataforma realizaria la publicación de mi trabajo y resolví que github
-es la plataforma más actualizada que ademas de alojar mi proyecto
+plataforma realizaría la publicación de mi trabajo y resolví que github
+es la plataforma más actualizada que además de alojar mi proyecto
 serviría para aprender a utilizar esta herramienta de control de
 versiones y que tambien me ayudaría a crear un portafolio inicial.
 
 Tuve que aprender desde como crear un archivo README en R a conectar Git
 desde la misma interfaz de R studio y añadí mi proyecto a github
-utilizando las siguientes lineas de comandos:
+utilizando las siguientes líneas de comandos:
 
 - git remote add origin
   <https://github.com/AngelGurrola/bellabeat_proyect.git>
 - git branch -M main
 - git push -u origin main
 
-Utilice el video tutorial de Riffomonas Project para aprender como
+Utilice el videotutorial de Riffomonas Project para aprender como
 conectar RStudio con github disponible en:
 <https://www.youtube.com/watch?v=bUoN85QvC10&t=505s>
 
-Una vez teniendo la plataforma lista comence con mi proyecto de analisis
+Una vez teniendo la plataforma lista comence con mi proyecto de análisis
 de datos para Bellabeat.
 
 ## Preparar
@@ -77,15 +77,15 @@ Comenzamos con importar el conjunto de datos: descargamos la carpeta
 comprimida desde: <https://www.kaggle.com/datasets/arashnic/fitbit>
 
 Al descomprimir la carpeta de datos se observan 18 tablas con un peso de
-322 MB en donde los titulos de cada una nos dan contexto del contenido y
+322 MB en donde los títulos de cada una nos dan contexto del contenido y
 el peso de las mismas nos ayudan a dimensionar la cantidad de datos que
 poseen, siendo la tabla heartrate_seconds_merged la más pesada con 87.4
 MB y weightLogInfo_merged la mas lígera con 7 KB.
 
-Se añadieron todos los archivos al directorio de trabajo despues de
+Se añadieron todos los archivos al directorio de trabajo después de
 darles un vistazo rápido desde hoja de cálculo.
 
-La tabla base desde obtendremos las primeras hipotesis será
+La tabla base de donde obtendremos las primeras hipotesis será
 dailyActivity_merged, la cual provee un resumen diario de los totales de
 información recolectada por los dispositivos de Bellabeat.
 
@@ -143,7 +143,7 @@ calorias <- read.csv(file="C://Users//an_96//Documents//Bellabeat//Bellabeat//ar
 
 Durante la revisión rápida en hojas de cálculo se observaron notables
 diferencias en la cantidad de datos, por lo tanto, se procedió a
-confirmar la cantidad de Id que contenian algunas de las tablas.
+confirmar la cantidad de Id que contenían algunas de las tablas.
 
 ``` r
 n_distinct(pesos$Id)
@@ -175,18 +175,18 @@ n_distinct(calorias$Id)
 
     ## [1] 33
 
-Se observa como la tabla de pesos incluye unicamente los datos de 8
-individuos por lo que deja de ser relevante para el analisis al no ser
+Se observa como la tabla de pesos incluye únicamente los datos de 8,
+individuos por lo que deja de ser relevante para el análisis al no ser
 una variable que incluyan en todas las tablas.
 
 Se observa también que la tabla de sueño contiene únicamente los
 registros de 24 usuarios.
 
-*Desde este punto considero importante mantener un registro más habitual
-del peso de los usuarios mediante una notificación de recordatorio a
-registrar tu peso.*
+***Desde este punto considero importante mantener un registro más
+habitual del peso de los usuarios mediante una notificación de
+recordatorio a registrar tu peso.***
 
-Para explorar las tablas se utilizó la libreria de tidyverse
+Para explorar las tablas se utilizó la librería de tidyverse
 
 ``` r
 glimpse(diario)
@@ -210,8 +210,8 @@ glimpse(diario)
     ## $ SedentaryMinutes         <int> 728, 776, 1218, 726, 773, 539, 1149, 775, 818…
     ## $ Calories                 <int> 1985, 1797, 1776, 1745, 1863, 1728, 1921, 203…
 
-De esta exploracion se observa que la fecha podría convertirse en un
-formato que permita manipulación para facilitar el analisis así como el
+De esta exploración se observó que la fecha podría convertirse en un
+formato que permita manipulación para facilitar el análisis así como el
 tipo de datos que se tienen en las distintas columnas.
 
 ``` r
@@ -228,7 +228,7 @@ sueño$SleepDay$X1=as.POSIXct(sueño$SleepDay$X1, format="%m/%d/%Y", tz=Sys.time
 sueño$fecha <- format(sueño$SleepDay$X1, format = "%m/%d/%y")
 ```
 
-Para obtener una mayor descripción de los datos se utilizo la siguiente
+Para obtener una mayor descripción de los datos se utilizó la siguiente
 función para obtener un resumen de los datos en la tabla de “diario”.
 
 ``` r
@@ -250,7 +250,7 @@ clave de esta parte del reto:
 
 Los datos tienen un formato largo y se organizan en 18 tablas
 almacenadas en archivos csv. Se detectan grandes problemas de sesgo al
-tener únicamente 33 usuarios de los cuales no se añaden contexto
+tener únicamente 33 usuarios, de los cuales no se añaden contexto
 demográfico como su ubicación, edad, sexo (se infiere que son mujeres,
 pero no se confirma) etc.
 
@@ -265,9 +265,9 @@ tratándola como un punto de partida para la formulación de hipótesis que
 se podrán confirmar con un estudio posterior donde se observen
 cantidades de datos significativas.
 
-Se acotará el analisis a las variables de actividad diaria que incluye
-calorias y a su vez, la tabla sueño y pesos que contienen información
-diaria.
+Se acotará el análisis a las variables de actividad diaria que incluye
+calorías y a su vez, la tabla sueño y la tabla pesos que contienen
+información diaria.
 
 ## Procesar
 
@@ -313,9 +313,9 @@ sum(is.na(calorias))
 
     ## [1] 0
 
-Al no encontrarse duplicados en las variables de analisis ni valores NA
+Al no encontrarse duplicados en las variables de análisis ni valores NA
 se procedió a buscar la cantidad de registros para cada usuario, es
-decir, la cantidad de dias que tenía cada usuario en su record diario.
+decir, la cantidad de días que tenía cada usuario en su récord diario.
 
 ``` r
 dias <- diario %>% group_by(Id) %>% 
@@ -336,7 +336,7 @@ usuarios como usuarios que no utilizan los productos habitualmente y se
 busca aplicar un enfoque distinto creando una columna para el día de la
 semana en que se realizó el registro.
 
-Para añadir esta variable se extrae de la columna de fecha el dia de la
+Para añadir esta variable se extrae de la columna de fecha el día de la
 semana que se realizó el registro.
 
 ``` r
@@ -381,7 +381,7 @@ head(diario)
     ## 6    domingo
 
 Antes de pasar a analizar el conjunto de datos, combinaremos la tabla de
-diario con la de sueño para obtener todos los datos diaros de los
+diario con la de sueño para obtener todos los datos diarios de los
 usuarios
 
 ``` r
@@ -437,7 +437,7 @@ del proyecto.
 
 ## Analizar y Compartir
 
-Primeramente recordaremos los encabezados de nuestra tabla
+Primeramente, recordaremos los encabezados de nuestra tabla
 
 ``` r
 colnames(juntos)
@@ -475,7 +475,7 @@ juntos %>%
     ##  3rd Qu.: 783.0   3rd Qu.:2926  
     ##  Max.   :1265.0   Max.   :4900
 
-### Por dia de la semana
+### Por día de la semana
 
 Para comparar los datos desde la perspectiva de día de la semana se
 exportó el archivo csv que por cuestiones de tiempo facilitó el análisis
@@ -493,7 +493,7 @@ De igual manera se intentaron realizar las gráficas desde R:
 
 ``` r
 df %>%
-ggplot(data = juntos, mapping = aes(x = Dia_semana, y = TotalSteps, fill = Dia_semana))+ geom_bar(stat = "identity", position = "dodge") + labs(title = "Pasos por dia de la semana") 
+ggplot(data = juntos, mapping = aes(x = Dia_semana, y = TotalSteps, fill = Dia_semana))+ geom_bar(stat = "identity", position = "dodge") + labs(title = "Pasos por día de la semana") 
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
@@ -501,7 +501,7 @@ ggplot(data = juntos, mapping = aes(x = Dia_semana, y = TotalSteps, fill = Dia_s
 ``` r
 library(forcats)
 df %>%
-ggplot(data = juntos, mapping = aes(x = fct_rev(fct_reorder(Dia_semana, Calories)), y = TotalSteps, fill = Dia_semana))+ geom_bar(stat = "identity") + labs(title = "Pasos por dia de la semana") 
+ggplot(data = juntos, mapping = aes(x = fct_rev(fct_reorder(Dia_semana, Calories)), y = TotalSteps, fill = Dia_semana))+ geom_bar(stat = "identity") + labs(title = "Calorias por día de la semana") 
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
@@ -510,21 +510,22 @@ Para corroborar el uso de los dispositivos de Bellabeat por día de la
 semana se graficaron los registros en excel como se muestra en las
 siguientes imagenes:
 
-![Calorias por dia de la semana.](~/1.png) ![Calorias por dia de la
-semana.](~/2.png)
+![Pruebas 1](img/1.png)
+
+![Verificación de pruebas](img/2.png)
 
 Se observó como los días martes, miercoles y jueves tienen la mayor
 cantidad de registros, y domingo y lunes la menor cantidad de los
 mismos.
 
-*Se puede realizar una encuesta a los usuarios acerca de porqué no
+***Se puede realizar una encuesta a los usuarios acerca de porque no
 utilizan los productos durante el fin de semana que podría
 retroalimentar al equipo para mejorar su usabilidad incluso durante el
-descanso de fin de semana.*
+descanso de fin de semana.***
 
-### Hipotesis de pesos
+### Hipótesis de pesos
 
-Aún cuando se descartó la importancia de la tabla de pesos resumiremos
+Aun cuando se descartó la importancia de la tabla de pesos, resumiremos
 los datos para conocer las características de los usuarios que sí
 registraton datos.
 
@@ -561,10 +562,10 @@ entre las variables, sin embargo, por la cantidad de datos se debe
 resolver primero que se obtengan los datos de más participantes.
 Considero que uno de los mejores indicadores de la salud de una persona
 es el Indice de Masa Corporal (BMI en inglés) y por tanto *se me ocurre
-ofrecer paquetes de productos donde se utilicen productos que monitoreen
-el IMC para que la aplicación de Bellabeat ofrezca notificaciones cuando
-este se vea fuera de sus parámetros normales, pasando a un monitoreo
-activo de tu IMC.*
+**ofrecer paquetes de productos donde se utilicen productos que
+monitoreen el IMC para que la aplicación de Bellabeat ofrezca
+notificaciones cuando este se vea fuera de sus parámetros normales,
+pasando a un monitoreo activo de tu IMC.***
 
 ### Relaciones entre variables
 
@@ -682,37 +683,42 @@ así pasar más tiempo efectivo de sueño y no solo acostado.*
 
 Los datos se organizaron de manera que pudieron ser manipulables y
 combinados. Se observaron las gráficas de dispersión para corroborar la
-confiabilidad en los datos.
+confiabilidad en los datos por cada tabla.
 
 ● ¿Tus datos tienen el formato correcto?
 
-La tabla de juntos parece presentar problemas de combinación, por lo
-tanto hay que re intentar
+Los gráficos de dispersión presentan datos lógicos y se resolvieron los
+errores de formato a lo largo de la manipulación de datos, se concluye
+que se tienen los datos con el formato adecuado para el análisis.
 
 ● ¿Qué sorpresas descubriste en los datos?
 
-Los formatos de fecha y hora pueden ser un dolor de cabeza.
+Los formatos de fecha y hora pueden ser un dolor de cabeza. Hay muchos
+caminos para resolver los problemas que puedan llegar a presentarse.
 
 ● ¿Qué tendencias o relaciones encontraste en los datos?
 
-Hipotesis obvias de como funciona el cuerpo,
+Existe una tendencia a no utilizar los dispositivos Bellabeat durante
+los fines de semana, de igual manera, existe una falta de datos de peso
+en muchos usuarios que podría deberse a no querer afrontar este dato.
 
 ● ¿Cómo te ayudarán estos conocimientos para responder a tus preguntas
 empresariales?
 
-Confirmando lo obvio, pero respaldado por los datos, no solo por mi
-conocimiento empirico.
+Buscando lineas de acción y posibles rutas de marketing para conseguir
+mejores resultados en la distribución de los productos de Bellabeat.
 
 ## Actuar
 
 Se realizaron observaciones a lo largo del documento con el formato de
-*italicas*, pero en resúmen las sugerencias son:
+*itálicas*, pero en resumen las sugerencias son:
 
 - ⚖️**Mejorar el registro de pesos mediante una notificación con
   periodicidad personalizada para registrar tu peso donde el usuario
   ingrese su peso. Otra posibilidad sería colaborar con empresas de
   básculas inteligentes para vincular la información a la aplicación de
-  Bellabeat.**
+  Bellabeat. Considerando la no visibilidad del dato, solo las acciones
+  para conservarlo o corregirlo.**
 
 - 📆**Con los datos de IMC actualizados se podría fijar una meta de
   calorías a quemar cuando el IMC se incremente fuera de su parametro
@@ -735,7 +741,7 @@ Se realizaron observaciones a lo largo del documento con el formato de
   ejercicios de meditación o respiración que permitan conciliar el sueño
   rapidamente, desde Time o la aplicación de Bellabeat.**
 
-  Las conclusiones presentadas tienen un alcance limitado y estan a la
+  Las conclusiones presentadas tienen un alcance limitado y están a la
   espera de obtener un conjunto de datos más grande que permita
   confirmar los hallazgos encontrados.
 
@@ -743,13 +749,19 @@ Se realizaron observaciones a lo largo del documento con el formato de
   duración y cantidad de usuarios en todas las variables.
 
 - 🎁**Vender paquetes de productos a un precio menor en paquete de
-  obsequio podría ser una buena estrategia de marketing que, a demas,
+  obsequio podría ser una buena estrategia de marketing que, a demás,
   contribuiría a la recolección de datos más precisos.**
 
   Involucrar tal vez un programa de recompensas donde puedas conseguir
   contenido exclusivo como sesiones con personal calificado que te ayude
   a avanzar en tus metas saludables puede ser un incentivo para
   participar en muestreos de datos.
+
+  Por último, la recolección de opiniones acerca de los productos nos
+  puede decir mucho la imagen que se tiene de los mismos entre los
+  clientes potenciales de Bellabeat, solicitar retroalimentación acerca
+  de encuestas tambien puede ser una vía para encontrar ideas
+  interesantes.
 
 ## Referencias
 
