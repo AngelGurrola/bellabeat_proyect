@@ -3,14 +3,32 @@ Bellabeat: proyecto final
 
 ## Contenido
 
-- Contexto
-- Segundo
+- [Contexto](#contexto)
+- [Paso cero](#paso-cero)
+- [Preparar](#preparar)
+- [Procesar](#procesar)
+- [Analizar y Compartir](#analizar-y-compartir)
+  - [Por dia de la semana](#por-dia-de-la-semana)
+
+  - [Hipotesis de pesos](#hipotesis-de-pesos)
+
+  - [Relaciones entre variables](#relaciones-entre-variables)
+
+    - [Diario](#diario)
+
+    - [Sueño](#sueño)
+
+    - [Juntos](#juntos)
+- [Actuar](#actuar)
+- [Referencias](#referencias)
 
 ## Contexto
 
-En este proyecto simulamos trabajar para la empresa Bellabeat. Urška
-Sršen y Sando Mur fundaron Bellabeat, una empresa de alta tecnología que
-fabrica productos inteligentes focalizados en el cuidado de la salud.
+En este proyecto se simula el trabajar para la empresa Bellabeat.
+
+Urška Sršen y Sando Mur fundaron Bellabeat, una empresa de alta
+tecnología que fabrica productos inteligentes focalizados en el cuidado
+de la salud.
 
 ¿Qué ha hecho?
 
@@ -21,7 +39,7 @@ fabrica productos inteligentes focalizados en el cuidado de la salud.
 
 Orden de trabajo:
 
-Concentrarse en un producto Bellabeat y analizar losdatos de uso de
+Concentrarse en un producto Bellabeat y analizar los datos de uso de
 dispositivos inteligentes para conocer cómo las personas están usando
 sus dispositivos inteligentes. Emitir recomendaciones de alto nivel
 sobre cómo estas tendencias pueden colaborar en la estrategia de
@@ -161,8 +179,8 @@ Se observa como la tabla de pesos incluye unicamente los datos de 8
 individuos por lo que deja de ser relevante para el analisis al no ser
 una variable que incluyan en todas las tablas.
 
-Así como que la tabla de sueño contiene únicamente los registros de 24
-usuarios.
+Se observa también que la tabla de sueño contiene únicamente los
+registros de 24 usuarios.
 
 *Desde este punto considero importante mantener un registro más habitual
 del peso de los usuarios mediante una notificación de recordatorio a
@@ -247,8 +265,9 @@ tratándola como un punto de partida para la formulación de hipótesis que
 se podrán confirmar con un estudio posterior donde se observen
 cantidades de datos significativas.
 
-Se acotará el analisis a las variables de pasos y calorias al ambas
-contener datos de los 33 usuarios.
+Se acotará el analisis a las variables de actividad diaria que incluye
+calorias y a su vez, la tabla sueño y pesos que contienen información
+diaria.
 
 ## Procesar
 
@@ -416,7 +435,7 @@ Tras haber realizado esta manipulación de los datos, y tomar en cuenta
 las consideraciones previamente declaradas. Se procede al siguiente paso
 del proyecto.
 
-## Analizar
+## Analizar y Compartir
 
 Primeramente recordaremos los encabezados de nuestra tabla
 
@@ -494,6 +513,15 @@ siguientes imagenes:
 ![Calorias por dia de la semana.](~/1.png) ![Calorias por dia de la
 semana.](~/2.png)
 
+Se observó como los días martes, miercoles y jueves tienen la mayor
+cantidad de registros, y domingo y lunes la menor cantidad de los
+mismos.
+
+*Se puede realizar una encuesta a los usuarios acerca de porqué no
+utilizan los productos durante el fin de semana que podría
+retroalimentar al equipo para mejorar su usabilidad incluso durante el
+descanso de fin de semana.*
+
 ### Hipotesis de pesos
 
 Aún cuando se descartó la importancia de la tabla de pesos resumiremos
@@ -532,11 +560,11 @@ manualmente considerando el IMC de la persona. Buscando una relación
 entre las variables, sin embargo, por la cantidad de datos se debe
 resolver primero que se obtengan los datos de más participantes.
 Considero que uno de los mejores indicadores de la salud de una persona
-es el Indice de Masa Corporal (BMI en inglés) y por tanto se me ocurre
+es el Indice de Masa Corporal (BMI en inglés) y por tanto *se me ocurre
 ofrecer paquetes de productos donde se utilicen productos que monitoreen
 el IMC para que la aplicación de Bellabeat ofrezca notificaciones cuando
 este se vea fuera de sus parámetros normales, pasando a un monitoreo
-activo de tu IMC.
+activo de tu IMC.*
 
 ### Relaciones entre variables
 
@@ -648,7 +676,7 @@ que, mayor tiempo en cama no es necesariamente tiempo dormido.
 conciliar el sueño más rapidamente cuando llegue la hora de acostarse y
 así pasar más tiempo efectivo de sueño y no solo acostado.*
 
-## Resultados
+### Preguntas guía
 
 ● ¿Cómo deberías organizar tus datos para realizar un análisis?
 
@@ -675,7 +703,60 @@ empresariales?
 Confirmando lo obvio, pero respaldado por los datos, no solo por mi
 conocimiento empirico.
 
-## Compartir
+## Actuar
 
 Se realizaron observaciones a lo largo del documento con el formato de
-*italicas*
+*italicas*, pero en resúmen las sugerencias son:
+
+- ⚖️**Mejorar el registro de pesos mediante una notificación con
+  periodicidad personalizada para registrar tu peso donde el usuario
+  ingrese su peso. Otra posibilidad sería colaborar con empresas de
+  básculas inteligentes para vincular la información a la aplicación de
+  Bellabeat.**
+
+- 📆**Con los datos de IMC actualizados se podría fijar una meta de
+  calorías a quemar cuando el IMC se incremente fuera de su parametro
+  saludable. Con la aplicación de Bellabeat.**
+
+- 🧑‍🤝‍🧑**Mejorar la usabilidad de los productos durante el fin de semana
+  mediante una comunidad de contactos que tambien utilicen los productos
+  Bellabeat para que vincule a los usuarios que tengan las mismas metas.
+  Compartir tu consumo de agua de Spring, por ejemplo.**
+
+- ⌚**Desarrollar un monitoreo activo de los usuarios e incluir metas de
+  pasos o distancias para quemar las calorías diarias propuestas para
+  conservar un IMC saludable. Recordatorios en Time.**
+
+- 📢🤸‍♀️**Notificar al usuario con vibración en Time tras largos periodos
+  de sedentarismo y sugerir estiramientos, movimientos u algúna otra
+  actividad para aumentar los minutos activos.**
+
+- 🧘‍♀️**Establecer parámetros para la hora de dormir y recomendar
+  ejercicios de meditación o respiración que permitan conciliar el sueño
+  rapidamente, desde Time o la aplicación de Bellabeat.**
+
+  Las conclusiones presentadas tienen un alcance limitado y estan a la
+  espera de obtener un conjunto de datos más grande que permita
+  confirmar los hallazgos encontrados.
+
+  Uno de los retos es conseguir muestreos de información con mayor
+  duración y cantidad de usuarios en todas las variables.
+
+- 🎁**Vender paquetes de productos a un precio menor en paquete de
+  obsequio podría ser una buena estrategia de marketing que, a demas,
+  contribuiría a la recolección de datos más precisos.**
+
+  Involucrar tal vez un programa de recompensas donde puedas conseguir
+  contenido exclusivo como sesiones con personal calificado que te ayude
+  a avanzar en tus metas saludables puede ser un incentivo para
+  participar en muestreos de datos.
+
+## Referencias
+
+<https://posit.cloud/content/2353211?idle=1679294948142>
+
+<https://github.com/emily1618/Google-Data-Analytics-Bellabeat-Case-Study#6-act>
+
+<https://www.kaggle.com/code/macarenalacasa/capstone-case-study-bellabeat>
+
+<https://www.kaggle.com/code/chebotinaa/bellabeat-case-study-with-r/notebook>
