@@ -95,6 +95,27 @@ library(dplyr)
     ##     intersect, setdiff, setequal, union
 
 ``` r
+library(ggplot2)
+library(tidyverse)
+```
+
+    ## Warning: package 'tidyverse' was built under R version 4.2.2
+
+    ## ── Attaching packages
+    ## ───────────────────────────────────────
+    ## tidyverse 1.3.2 ──
+
+    ## ✔ tibble  3.1.8     ✔ stringr 1.4.1
+    ## ✔ tidyr   1.2.0     ✔ forcats 0.5.2
+    ## ✔ purrr   0.3.4
+
+    ## Warning: package 'forcats' was built under R version 4.2.2
+
+    ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ✖ dplyr::filter() masks stats::filter()
+    ## ✖ dplyr::lag()    masks stats::lag()
+
+``` r
 pesos <- read.csv(file="C://Users//an_96//Documents//Bellabeat//Bellabeat//archive//Fitabase Data 4.12.16-5.12.16//weightLogInfo_merged.csv")
 pasos <- read.csv(file="C://Users//an_96//Documents//Bellabeat//Bellabeat//archive//Fitabase Data 4.12.16-5.12.16//hourlySteps_merged.csv")
 diario <- read.csv(file="C://Users//an_96//Documents//Bellabeat//Bellabeat//archive//Fitabase Data 4.12.16-5.12.16//dailyActivity_merged.csv")
@@ -136,7 +157,7 @@ n_distinct(calorias$Id)
 
     ## [1] 33
 
-Se observa como la tabla de pesos inlcuye unicamente los datos de 8
+Se observa como la tabla de pesos incluye unicamente los datos de 8
 individuos por lo que deja de ser relevante para el analisis al no ser
 una variable que incluyan en todas las tablas.
 
@@ -285,7 +306,7 @@ sum(is.na(calorias))
 
     ## [1] 0
 
-Al no encontrarse duplicados en las variables de analisis ni valores na
+Al no encontrarse duplicados en las variables de analisis ni valores NA
 se procedió a buscar la cantidad de registros para cada usuario, es
 decir, la cantidad de dias que tenía cada usuario en su record diario.
 
@@ -303,19 +324,184 @@ registros para los usuarios.
 
 Se considera reducir el análisis a solo los individuos con más de 25
 registros para evitar sesgos por registros incompletos que lleguen a
-alterar las cifras completas, sin emmbargo, se resuelve a clasificar a
-los usuarios como usuarios que no utilizan los productos habitualmente y
-se busca aplicar el enfoque a día de la semana para evitar ese sesgo.
+alterar las cifras completas, sin embargo, se plantea clasificar a los
+usuarios como usuarios que no utilizan los productos habitualmente y se
+busca aplicar un enfoque distinto creando una columna para el día de la
+semana en que se realizó el registro.
 
 Para añadir esta variable se extrae de la columna de fecha el dia de la
 semana que se realizó el registro.
 
 ``` r
 diario <- diario %>% mutate( Dia_semana = weekdays(as.Date(ActivityDate, "%m/%d/%Y")))
+head(diario)
 ```
+
+    ##           Id ActivityDate TotalSteps TotalDistance TrackerDistance
+    ## 1 1503960366    4/12/2016      13162          8.50            8.50
+    ## 2 1503960366    4/13/2016      10735          6.97            6.97
+    ## 3 1503960366    4/14/2016      10460          6.74            6.74
+    ## 4 1503960366    4/15/2016       9762          6.28            6.28
+    ## 5 1503960366    4/16/2016      12669          8.16            8.16
+    ## 6 1503960366    4/17/2016       9705          6.48            6.48
+    ##   LoggedActivitiesDistance VeryActiveDistance ModeratelyActiveDistance
+    ## 1                        0               1.88                     0.55
+    ## 2                        0               1.57                     0.69
+    ## 3                        0               2.44                     0.40
+    ## 4                        0               2.14                     1.26
+    ## 5                        0               2.71                     0.41
+    ## 6                        0               3.19                     0.78
+    ##   LightActiveDistance SedentaryActiveDistance VeryActiveMinutes
+    ## 1                6.06                       0                25
+    ## 2                4.71                       0                21
+    ## 3                3.91                       0                30
+    ## 4                2.83                       0                29
+    ## 5                5.04                       0                36
+    ## 6                2.51                       0                38
+    ##   FairlyActiveMinutes LightlyActiveMinutes SedentaryMinutes Calories Dia_semana
+    ## 1                  13                  328              728     1985     martes
+    ## 2                  19                  217              776     1797  miércoles
+    ## 3                  11                  181             1218     1776     jueves
+    ## 4                  34                  209              726     1745    viernes
+    ## 5                  10                  221              773     1863     sábado
+    ## 6                  20                  164              539     1728    domingo
+
+La tabla diario contiene todas las variables de estudio y los datos de
+los usuarios reunidos en una única tabla, por lo que será seleccionada
+como principal.
 
 Tras haber realizado esta manipulación de los datos, y tomar en cuenta
 las consideraciones previamente declaradas. Se procede al siguiente paso
 del proyecto.
 
 ## Analizar
+
+Primeramente recordaremos los encabezados de nuestra tabla
+
+``` r
+colnames(diario)
+```
+
+    ##  [1] "Id"                       "ActivityDate"            
+    ##  [3] "TotalSteps"               "TotalDistance"           
+    ##  [5] "TrackerDistance"          "LoggedActivitiesDistance"
+    ##  [7] "VeryActiveDistance"       "ModeratelyActiveDistance"
+    ##  [9] "LightActiveDistance"      "SedentaryActiveDistance" 
+    ## [11] "VeryActiveMinutes"        "FairlyActiveMinutes"     
+    ## [13] "LightlyActiveMinutes"     "SedentaryMinutes"        
+    ## [15] "Calories"                 "Dia_semana"
+
+``` r
+summary(diario)
+```
+
+    ##        Id            ActivityDate         TotalSteps    TotalDistance   
+    ##  Min.   :1.504e+09   Length:940         Min.   :    0   Min.   : 0.000  
+    ##  1st Qu.:2.320e+09   Class :character   1st Qu.: 3790   1st Qu.: 2.620  
+    ##  Median :4.445e+09   Mode  :character   Median : 7406   Median : 5.245  
+    ##  Mean   :4.855e+09                      Mean   : 7638   Mean   : 5.490  
+    ##  3rd Qu.:6.962e+09                      3rd Qu.:10727   3rd Qu.: 7.713  
+    ##  Max.   :8.878e+09                      Max.   :36019   Max.   :28.030  
+    ##  TrackerDistance  LoggedActivitiesDistance VeryActiveDistance
+    ##  Min.   : 0.000   Min.   :0.0000           Min.   : 0.000    
+    ##  1st Qu.: 2.620   1st Qu.:0.0000           1st Qu.: 0.000    
+    ##  Median : 5.245   Median :0.0000           Median : 0.210    
+    ##  Mean   : 5.475   Mean   :0.1082           Mean   : 1.503    
+    ##  3rd Qu.: 7.710   3rd Qu.:0.0000           3rd Qu.: 2.053    
+    ##  Max.   :28.030   Max.   :4.9421           Max.   :21.920    
+    ##  ModeratelyActiveDistance LightActiveDistance SedentaryActiveDistance
+    ##  Min.   :0.0000           Min.   : 0.000      Min.   :0.000000       
+    ##  1st Qu.:0.0000           1st Qu.: 1.945      1st Qu.:0.000000       
+    ##  Median :0.2400           Median : 3.365      Median :0.000000       
+    ##  Mean   :0.5675           Mean   : 3.341      Mean   :0.001606       
+    ##  3rd Qu.:0.8000           3rd Qu.: 4.782      3rd Qu.:0.000000       
+    ##  Max.   :6.4800           Max.   :10.710      Max.   :0.110000       
+    ##  VeryActiveMinutes FairlyActiveMinutes LightlyActiveMinutes SedentaryMinutes
+    ##  Min.   :  0.00    Min.   :  0.00      Min.   :  0.0        Min.   :   0.0  
+    ##  1st Qu.:  0.00    1st Qu.:  0.00      1st Qu.:127.0        1st Qu.: 729.8  
+    ##  Median :  4.00    Median :  6.00      Median :199.0        Median :1057.5  
+    ##  Mean   : 21.16    Mean   : 13.56      Mean   :192.8        Mean   : 991.2  
+    ##  3rd Qu.: 32.00    3rd Qu.: 19.00      3rd Qu.:264.0        3rd Qu.:1229.5  
+    ##  Max.   :210.00    Max.   :143.00      Max.   :518.0        Max.   :1440.0  
+    ##     Calories     Dia_semana       
+    ##  Min.   :   0   Length:940        
+    ##  1st Qu.:1828   Class :character  
+    ##  Median :2134   Mode  :character  
+    ##  Mean   :2304                     
+    ##  3rd Qu.:2793                     
+    ##  Max.   :4900
+
+### Por dia de la semana
+
+Para comparar los datos desde la perspectiva de día de la semana se
+exportó el archivo csv que por cuestiones de tiempo facilitó el análisis
+y la creación de gráficos.
+
+write.csv(diario, file = “diario.csv”)
+
+``` r
+##diario$Dia_semana = factor(diario$Dia_semana, levels = c("lunes", "martes", "miércoles", "jueves", "sábado", "domingo"))
+```
+
+``` r
+df %>%
+ggplot(data = diario, mapping = aes(x = Dia_semana, y = TotalSteps, fill = Dia_semana))+ geom_bar(stat = "identity", position = "dodge") + labs(title = "Pasos por dia de la semana") 
+```
+
+![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+
+``` r
+library(forcats)
+df %>%
+ggplot(data = diario, mapping = aes(x = fct_rev(fct_reorder(Dia_semana, Calories)), y = TotalSteps, fill = Dia_semana))+ geom_bar(stat = "identity") + labs(title = "Pasos por dia de la semana") 
+```
+
+![](README_files/figure-gfm/unnamed-chunk-12-1.png)<!-- --> Para
+corroborar el uso de los dispositivos de Bellabeat por día de la semana
+se graficaron los registros ![Calorias por dia de la
+semana.](~/Bellabeat/Bellabeat/archive/1.png) ![Calorias por dia de la
+semana.](~/Bellabeat/Bellabeat/archive/2.png)
+
+### Hipotesis de pesos
+
+Aún cuando se descartó la importancia de la tabla de pesos resumiremos
+los datos para conocer las características de los usuarios que sí
+registraton datos.
+
+``` r
+usuariospesos <- pesos %>% 
+  select(Id, BMI, IsManualReport) %>% 
+  group_by(Id, IsManualReport) %>%  
+  summarise(IMCpromedio = mean(BMI), n = n())
+```
+
+    ## `summarise()` has grouped output by 'Id'. You can override using the `.groups`
+    ## argument.
+
+``` r
+arrange(usuariospesos, IMCpromedio)
+```
+
+    ## # A tibble: 8 × 4
+    ## # Groups:   Id [8]
+    ##           Id IsManualReport IMCpromedio     n
+    ##        <dbl> <chr>                <dbl> <int>
+    ## 1 2873212765 True                  21.6     2
+    ## 2 1503960366 True                  22.6     2
+    ## 3 6962181067 True                  24.0    30
+    ## 4 8877689391 False                 25.5    24
+    ## 5 4558609924 True                  27.2     5
+    ## 6 4319703577 True                  27.4     2
+    ## 7 5577150313 False                 28       1
+    ## 8 1927972279 False                 47.5     1
+
+De esta tabla esperaba obtener la cantidad de reportes efectuados
+manualmente considerando el IMC de la persona. Buscando una relación
+entre las variables, sin embargo, por la cantidad de datos se debe
+resolver primero que se obtengan los datos de más participantes.
+Considero que uno de los mejores indicadores de la salud de una persona
+es el Indice de Masa Corporal(BMI en inglés) y por tanto se me ocurre
+ofrecer paquetes de productos donde se utilicen productos que monitoreen
+el IMC para que la aplicación de Bellabeat ofrezca notificaciones cuando
+este se vea fuera de sus parámetros normales, pasando a un monitoreo
+activo de tu IMC.
